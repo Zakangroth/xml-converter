@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="game.xsl" type="text/xsl"?>
+<test>
+    <game id="1">
+        <name>Guild Wars</name>
+        <type>MMORPG</type>
+        <price>20€</price>
+    </game>
+    <game id="2">
+        <name>Super Mario Galaxy</name>
+        <type>Platformer</type>
+        <price>30€</price>
+    </game>
+    <game id="3">
+        <name>Mario Sokoban</name>
+        <type>Puzzle</type>
+        <price>Free</price>
+    </game>
+</test>
+
