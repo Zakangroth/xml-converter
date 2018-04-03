@@ -15,4 +15,9 @@ public class XmlConverter {
     public void xmlToCsv() {
         xmlService.xmlToCsv();
     }
+
+    @RequestMapping(value = {"csvToXml"})
+    public void csvToXml() {
+        xmlService.csvToXml();
+    }
 }
