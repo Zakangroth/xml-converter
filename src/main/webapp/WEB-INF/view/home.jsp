@@ -4,11 +4,26 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-        <title>Demo | Welcome</title>
+        <title>XML Converter</title>
     </head>
 
     <body>
-        Welcome home !
-        <p>Current Date is ${currentDate }</p>
+        <h1>Welcome to XML Converter</h1>
+
+        <h3>Convert XML to CSV</h3>
+
+        <form method="post" action="/xmlToCsv" enctype="multipart/form-data">
+            Select XML file:<input type="file" name="xmlFile">
+            <br/>
+            Select XSL file:<input type="file" name="xslFile">
+            <br/>
+            <input type="submit" value="Convert"/>
+        </form>
+
+        <h3>Convert CSV to XML</h3>
+
+        <form method="post" action="/csvToXml">
+            <input type="submit" value="Convert"/>
+        </form>
     </body>
 </html>
