@@ -22,7 +22,9 @@
 
         <h3>Convert CSV to XML</h3>
 
-        <form method="post" action="/csvToXml">
+        <form method="post" action="/csvToXml" enctype="multipart/form-data">
+            Select CSV file:<input type="file" name="csvFile">
+            <br/>
             <input type="submit" value="Convert"/>
         </form>
     </body>

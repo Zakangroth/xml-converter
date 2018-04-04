@@ -41,8 +41,19 @@ public class XmlConverterController {
     }
 
     @RequestMapping(value = {"csvToXml"})
-    public ModelAndView csvToXml() {
-        xmlService.csvToXml();
+    public ModelAndView csvToXml(HttpServletRequest request) {
+
+        try {
+            Part csvFilePart = request.getPart("csvFile");
+
+            InputStream csvFile = csvFilePart.getInputStream();
+
+            String outputName = FilenameUtils.removeExtension(csvFilePart.getSubmittedFileName());
+
+            xmlService.csvToXml(csvFile, outputName, ",");
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
+        }
         return new ModelAndView("redirect:/home");
     }
 }
