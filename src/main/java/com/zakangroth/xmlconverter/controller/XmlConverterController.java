@@ -5,10 +5,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ public class XmlConverterController {
     XmlService xmlService;
 
     @RequestMapping(value = {"xmlToCsv"})
-    public ModelAndView xmlToCsv(HttpServletRequest request) {
+    public void xmlToCsv(HttpServletRequest request, HttpServletResponse response) {
 
         try {
             Part xmlFilePart = request.getPart("xmlFile");
@@ -32,16 +32,18 @@ public class XmlConverterController {
 
             String outputName = FilenameUtils.removeExtension(xmlFilePart.getSubmittedFileName());
 
-            xmlService.xmlToCsv(xmlFile, xslFile, outputName);
+            byte[] output = xmlService.xmlToCsv(xmlFile, xslFile);
+            response.setContentType("text/csv");
+            response.setHeader("Content-Disposition", "attachment;filename=" + outputName + ".csv");
+            response.getOutputStream().write(output);
+
         } catch (ServletException | IOException e) {
             e.printStackTrace();
         }
-
-        return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(value = {"csvToXml"})
-    public ModelAndView csvToXml(HttpServletRequest request) {
+    public void csvToXml(HttpServletRequest request, HttpServletResponse response) {
 
         try {
             Part csvFilePart = request.getPart("csvFile");
@@ -50,10 +52,12 @@ public class XmlConverterController {
 
             String outputName = FilenameUtils.removeExtension(csvFilePart.getSubmittedFileName());
 
-            xmlService.csvToXml(csvFile, outputName, ",");
+            byte[] output = xmlService.csvToXml(csvFile, ",");
+            response.setContentType("text/xml");
+            response.setHeader("Content-Disposition", "attachment;filename=" + outputName + ".xml");
+            response.getOutputStream().write(output);
         } catch (ServletException | IOException e) {
             e.printStackTrace();
         }
-        return new ModelAndView("redirect:/home");
     }
 }

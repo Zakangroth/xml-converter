@@ -14,7 +14,11 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +37,7 @@ public class XmlService {
         }
     }
 
-    public void xmlToCsv(InputStream xmlFile, InputStream xslFile, String outputName) {
+    public byte[] xmlToCsv(InputStream xmlFile, InputStream xslFile) {
 
         // No proper error handling. Training purpose.
         try {
@@ -44,17 +48,22 @@ public class XmlService {
             StreamSource stylesource = new StreamSource(xslFile);
             Transformer transformer = TransformerFactory.newInstance().newTransformer(stylesource);
             Source source = new DOMSource(document);
-            Result outputTarget = new StreamResult(new File("/tmp/" + outputName + ".csv"));
-            transformer.transform(source, outputTarget);
+            StreamResult result = new StreamResult(new StringWriter());
+            transformer.transform(source, result);
+
+            String csvString = result.getWriter().toString();
+
+            // Finally, send the response
+            return csvString.getBytes(Charset.forName("UTF-8"));
         } catch (IOException | ParserConfigurationException | SAXException | TransformerException e) {
             e.printStackTrace();
         }
+
+        return new byte[0];
     }
 
-    public int csvToXml(InputStream csvFile, String xmlFileName, String delimiter) {
+    public byte[] csvToXml(InputStream csvFile, String delimiter) {
 
-        int rowsCount = -1;
-        BufferedReader csvReader;
         try {
             Document newDoc = domBuilder.newDocument();
             // Root element
@@ -91,11 +100,7 @@ public class XmlService {
             }
             //** End of CSV parsing**//
 
-            FileWriter writer = null;
-
             try {
-
-                writer = new FileWriter(new File("/tmp/" + xmlFileName + ".xml"));
 
                 TransformerFactory tranFactory = TransformerFactory.newInstance();
                 Transformer aTransformer = tranFactory.newTransformer();
@@ -104,30 +109,21 @@ public class XmlService {
                 aTransformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
                 Source src = new DOMSource(newDoc);
-                Result result = new StreamResult(writer);
+                StreamResult result = new StreamResult(new StringWriter());
                 aTransformer.transform(src, result);
 
-                writer.flush();
+                String xmlString = result.getWriter().toString();
+
+                // Finally, send the response
+                return xmlString.getBytes(Charset.forName("UTF-8"));
 
             } catch (Exception exp) {
                 exp.printStackTrace();
-            } finally {
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                } catch (Exception e) {
-                    System.err.println(e.toString());
-                }
             }
-
-            // Output to console for testing
-            // Resultt result = new StreamResult(System.out);
 
         } catch (Exception exp) {
             System.err.println(exp.toString());
         }
-        return rowsCount;
-        // "XLM Document has been created" + rowsCount;
+        return new byte[0];
     }
 }
